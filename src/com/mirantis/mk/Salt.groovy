@@ -142,6 +142,26 @@ def enforceState(master, target, state, output = true, failOnError = true, batch
     return out
 }
 
+ def checkState(master, target, state, output = true, failOnError = true, batch = null) {
+     def common = new com.mirantis.mk.Common()
+     def run_states
+
+     if (state instanceof String) {
+         run_states = state
+     } else {
+         run_states = state.join(',')
+     }
+
+     common.infoMsg("Enforcing state ${run_states} on ${target}")
+
+     def out = runSaltCommand(master, 'local', ['expression': target, 'type': 'compound'], 'state.sls', batch, [run_states])
+
+     checkResult(out, failOnError, output)
+     return out
+ }
+
+
+
 /**
  * Run command on salt minion (salt cmd.run wrapper)
  * @param master Salt connection object
